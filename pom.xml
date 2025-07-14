@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>innowise</groupId>
-    <artifactId>authentification-service</artifactId>
+    <artifactId>authentication-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>authentification-service</name>
     <description>authentification-service</description>
@@ -72,6 +72,11 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.12.6</version>
         </dependency>
     </dependencies>
 
