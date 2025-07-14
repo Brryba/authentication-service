@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "user_credentials")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(unique = true, nullable = false)
