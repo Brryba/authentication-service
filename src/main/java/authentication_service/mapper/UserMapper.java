@@ -1,7 +1,7 @@
 package authentication_service.mapper;
 
-import authentication_service.dto.dto.UserRequestDto;
-import authentication_service.dto.dto.UserResponseDto;
+import authentication_service.dto.user.UserRequestDto;
+import authentication_service.dto.user.UserResponseDto;
 import authentication_service.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

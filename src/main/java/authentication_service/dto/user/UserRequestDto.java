@@ -1,4 +1,4 @@
-package authentication_service.dto.dto;
+package authentication_service.dto.user;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

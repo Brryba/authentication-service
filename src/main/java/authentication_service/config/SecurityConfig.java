@@ -2,7 +2,6 @@ package authentication_service.config;
 
 import authentication_service.repository.UserRepository;
 import authentication_service.service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,9 +50,9 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/signup").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth.
+                        requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
                 );
 
         return http.build();

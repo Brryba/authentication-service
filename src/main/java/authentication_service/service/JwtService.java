@@ -23,7 +23,7 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(JwtKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(Integer id, String login) {
+    public String generateAccessToken(Long id, String login) {
         return Jwts.builder()
                 .subject(login)
                 .subject(id.toString())
