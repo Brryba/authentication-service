@@ -16,6 +16,7 @@ import authentication_service.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${token.expiration.access-minutes}")
@@ -60,7 +61,7 @@ public class AuthService {
             throw new WrongPasswordException("Wrong password, try again");
         }
 
-        String accessToken = jwtService.generateAccessToken(storedUser.getId(),
+        String accessToken = jwtUtil.generateAccessToken(storedUser.getId(),
                 storedUser.getLogin());
 
         RefreshToken newRefreshToken = RefreshToken.builder()
@@ -81,14 +82,16 @@ public class AuthService {
     }
 
     public void verify(String accessToken) {
-        jwtService.validateAccessToken(accessToken);
+        jwtUtil.validateAccessToken(accessToken);
     }
 
     public RefreshTokenDto refreshAccessToken(UUID refreshToken) {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new RefreshTokenNotFoundException("Refresh token is invalid"));
+                .orElseThrow(() -> new RefreshTokenNotFoundException(
+                        HttpStatus.FORBIDDEN,
+                        "Refresh token is invalid"));
 
-        String newAccessToken = jwtService
+        String newAccessToken = jwtUtil
                 .generateAccessToken(refreshTokenEntity.getUser().getId(),
                         refreshTokenEntity.getUser().getLogin());
 
@@ -96,5 +99,16 @@ public class AuthService {
                 .refreshToken(newAccessToken)
                 .expiresInMinutes(jwtExpirationMinutes)
                 .build();
+    }
+
+    @Transactional
+    public void logout(UUID refreshToken) {
+        refreshTokenRepository.findByToken(refreshToken).ifPresentOrElse(
+                refreshTokenRepository::deleteByToken,
+                () -> {
+                    throw new RefreshTokenNotFoundException(
+                            HttpStatus.BAD_REQUEST,
+                            "Invalid refresh token or user already logged out");
+                });
     }
 }

@@ -59,6 +59,12 @@ public class AuthController {
         return authService.refreshAccessToken(refreshToken);
     }
 
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.OK)
+    public void logout(@CookieValue("refreshToken") UUID refreshToken) {
+        authService.logout(refreshToken);
+    }
+
     private void setRefreshTokenCookies(HttpServletResponse response, String refreshToken) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
