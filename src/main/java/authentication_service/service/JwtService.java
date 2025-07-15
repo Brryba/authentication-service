@@ -14,7 +14,7 @@ import java.util.Date;
 public class JwtService {
     @Value("${JWT_KEY}")
     private String JwtKey;
-    @Value("${JWT_EXPIRATION_MINUTES}")
+    @Value("${token.expiration.access-minutes}")
     private int jwtExpirationInMinutes;
     private SecretKey key;
 

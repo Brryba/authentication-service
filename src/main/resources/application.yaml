@@ -19,3 +19,8 @@ server:
   error:
     include-stacktrace: never
   port: 8081
+
+token:
+  expiration:
+    access-minutes: 60
+    refresh-days: 7
