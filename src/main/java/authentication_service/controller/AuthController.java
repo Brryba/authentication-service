@@ -7,12 +7,15 @@ import authentication_service.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +23,7 @@ import java.net.http.HttpResponse;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth/")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
     @Value("${token.expiration.refresh-days}")
@@ -39,6 +42,13 @@ public class AuthController {
         LoginResponseDto responseDto = authService.login(userRequestDto);
         setRefreshTokenCookies(response, responseDto.getRefreshToken());
         return responseDto;
+    }
+
+    @GetMapping("/verify")
+    @ResponseStatus(HttpStatus.OK)
+    public String verify(@NotNull @RequestParam(name = "token") String accessToken) {
+        authService.verify(accessToken);
+        return "Token verified!";
     }
 
     private void setRefreshTokenCookies(HttpServletResponse response, String refreshToken) {

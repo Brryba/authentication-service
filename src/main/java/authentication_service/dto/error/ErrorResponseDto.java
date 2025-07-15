@@ -1,0 +1,19 @@
+package authentication_service.dto.error;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ErrorResponseDto {
+    private LocalDateTime timestamp;
+    private int status;
+    private String error;
+    private String message;
+}

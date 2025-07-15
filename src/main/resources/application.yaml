@@ -24,3 +24,9 @@ token:
   expiration:
     access-minutes: 60
     refresh-days: 7
+
+logging:
+  level:
+    org:
+      springframework:
+        security: trace

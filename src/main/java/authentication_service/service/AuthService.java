@@ -76,4 +76,8 @@ public class AuthService {
                 .refreshTokenExpiresInDays(refreshTokenExpirationDays)
                 .build();
     }
+
+    public void verify(String accessToken) {
+        jwtService.validateAccessToken(accessToken);
+    }
 }
