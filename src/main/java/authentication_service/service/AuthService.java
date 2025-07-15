@@ -7,6 +7,7 @@ import authentication_service.dto.user.UserResponseDto;
 import authentication_service.entity.RefreshToken;
 import authentication_service.entity.User;
 import authentication_service.exception.LoginDuplicateException;
+import authentication_service.exception.RefreshTokenExpiredException;
 import authentication_service.exception.RefreshTokenNotFoundException;
 import authentication_service.exception.UserNotFoundException;
 import authentication_service.exception.WrongPasswordException;
@@ -17,6 +18,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@EnableScheduling
 public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -38,6 +42,13 @@ public class AuthService {
     private int jwtExpirationMinutes;
     @Value("${token.expiration.refresh-days}")
     private int refreshTokenExpirationDays;
+
+    @Scheduled(fixedRate = 1000 * 60 * 10)
+    @Transactional
+    public void deleteExpiredTokensOnceInTenMinutes() {
+        System.out.println("Deleting expired tokens once in 10 minutes");
+        refreshTokenRepository.deleteByExpiresAtLessThan(LocalDateTime.now());
+    }
 
     public UserResponseDto signUp(@Valid @RequestBody UserRequestDto userRequestDto) {
         if (userRepository.existsByLogin(userRequestDto.getLogin())) {
@@ -90,6 +101,10 @@ public class AuthService {
                 .orElseThrow(() -> new RefreshTokenNotFoundException(
                         HttpStatus.FORBIDDEN,
                         "Refresh token is invalid"));
+
+        if (refreshTokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RefreshTokenExpiredException("Refresh token expired");
+        }
 
         String newAccessToken = jwtUtil
                 .generateAccessToken(refreshTokenEntity.getUser().getId(),

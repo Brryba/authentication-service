@@ -22,5 +22,5 @@ server:
 
 token:
   expiration:
-    access-minutes: 60
+    access-minutes: 10
     refresh-days: 7
