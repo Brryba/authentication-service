@@ -1,11 +1,13 @@
 package authentication_service.service;
 
 import authentication_service.dto.login.LoginResponseDto;
+import authentication_service.dto.login.RefreshTokenDto;
 import authentication_service.dto.user.UserRequestDto;
 import authentication_service.dto.user.UserResponseDto;
 import authentication_service.entity.RefreshToken;
 import authentication_service.entity.User;
 import authentication_service.exception.LoginDuplicateException;
+import authentication_service.exception.RefreshTokenNotFoundException;
 import authentication_service.exception.UserNotFoundException;
 import authentication_service.exception.WrongPasswordException;
 import authentication_service.mapper.UserMapper;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -79,5 +82,19 @@ public class AuthService {
 
     public void verify(String accessToken) {
         jwtService.validateAccessToken(accessToken);
+    }
+
+    public RefreshTokenDto refreshAccessToken(UUID refreshToken) {
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new RefreshTokenNotFoundException("Refresh token is invalid"));
+
+        String newAccessToken = jwtService
+                .generateAccessToken(refreshTokenEntity.getUser().getId(),
+                        refreshTokenEntity.getUser().getLogin());
+
+        return RefreshTokenDto.builder()
+                .refreshToken(newAccessToken)
+                .expiresInMinutes(jwtExpirationMinutes)
+                .build();
     }
 }
