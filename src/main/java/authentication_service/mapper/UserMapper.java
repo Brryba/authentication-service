@@ -13,8 +13,6 @@ import org.mapstruct.ReportingPolicy;
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
-    @Mapping(target = "refreshTokens", ignore = true)
     User toUser(UserRequestDto requestDto);
 
     UserResponseDto toUserResponseDto(User user);

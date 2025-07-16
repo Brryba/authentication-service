@@ -46,7 +46,6 @@ public class AuthService {
     @Scheduled(fixedRate = 1000 * 60 * 10)
     @Transactional
     public void deleteExpiredTokensOnceInTenMinutes() {
-        System.out.println("Deleting expired tokens once in 10 minutes");
         refreshTokenRepository.deleteByExpiresAtLessThan(LocalDateTime.now());
     }
 
@@ -111,7 +110,7 @@ public class AuthService {
                         refreshTokenEntity.getUser().getLogin());
 
         return RefreshTokenDto.builder()
-                .refreshToken(newAccessToken)
+                .accessToken(newAccessToken)
                 .expiresInMinutes(jwtExpirationMinutes)
                 .build();
     }
@@ -119,7 +118,7 @@ public class AuthService {
     @Transactional
     public void logout(UUID refreshToken) {
         refreshTokenRepository.findByToken(refreshToken).ifPresentOrElse(
-                refreshTokenRepository::deleteByToken,
+                refreshTokenRepository::delete,
                 () -> {
                     throw new RefreshTokenNotFoundException(
                             HttpStatus.BAD_REQUEST,
