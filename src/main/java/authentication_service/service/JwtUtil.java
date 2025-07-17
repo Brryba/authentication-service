@@ -25,9 +25,8 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(jwtKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(Long id, String login) {
+    public String generateAccessToken(Long id) {
         return Jwts.builder()
-                .subject(login)
                 .subject(id.toString())
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime()

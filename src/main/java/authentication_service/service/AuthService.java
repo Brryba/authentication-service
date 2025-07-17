@@ -71,8 +71,7 @@ public class AuthService {
             throw new WrongPasswordException("Wrong password, try again");
         }
 
-        String accessToken = jwtUtil.generateAccessToken(storedUser.getId(),
-                storedUser.getLogin());
+        String accessToken = jwtUtil.generateAccessToken(storedUser.getId());
 
         RefreshToken newRefreshToken = RefreshToken.builder()
                 .user(storedUser)
@@ -106,8 +105,7 @@ public class AuthService {
         }
 
         String newAccessToken = jwtUtil
-                .generateAccessToken(refreshTokenEntity.getUser().getId(),
-                        refreshTokenEntity.getUser().getLogin());
+                .generateAccessToken(refreshTokenEntity.getUser().getId());
 
         return RefreshTokenDto.builder()
                 .accessToken(newAccessToken)
