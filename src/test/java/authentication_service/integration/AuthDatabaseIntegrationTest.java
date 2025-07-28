@@ -11,20 +11,21 @@ import authentication_service.exception.WrongPasswordException;
 import authentication_service.repository.RefreshTokenRepository;
 import authentication_service.repository.UserRepository;
 import authentication_service.service.AuthService;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import static authentication_service.config.TestContainersConfig.postgres;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -48,9 +49,20 @@ public class AuthDatabaseIntegrationTest {
 
     private UserRequestDto userRequestDto;
 
+    @Container
+    public static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:15-alpine"
+    );
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
+
     @BeforeEach
     void beforeEach() {
-
         this.userRequestDto = UserRequestDto.builder()
                 .login("login")
                 .password("password")
