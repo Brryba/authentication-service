@@ -53,14 +53,14 @@ public class AuthController {
         return "Token verified!";
     }
 
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     @ResponseStatus(HttpStatus.OK)
     public RefreshedAccessTokenDto refresh(@CookieValue("refreshToken") UUID refreshToken) {
         return authService.refreshAccessToken(refreshToken);
     }
 
     @PostMapping("/logout")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@CookieValue("refreshToken") UUID refreshToken) {
         authService.logout(refreshToken);
     }
@@ -68,8 +68,8 @@ public class AuthController {
     private void setRefreshTokenCookies(HttpServletResponse response, String refreshToken) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/api/auth/refresh");
-        refreshTokenCookie.setMaxAge(refreshTokenExpirationDays);
+        refreshTokenCookie.setPath("/api/auth");
+        refreshTokenCookie.setMaxAge(refreshTokenExpirationDays * 24 * 60 * 60);
         response.addCookie(refreshTokenCookie);
     }
 }

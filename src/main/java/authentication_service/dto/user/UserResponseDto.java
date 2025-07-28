@@ -1,9 +1,11 @@
 package authentication_service.dto.user;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class UserResponseDto {
-    Long id;
-    String login;
+    private Long id;
+    private String login;
 }
