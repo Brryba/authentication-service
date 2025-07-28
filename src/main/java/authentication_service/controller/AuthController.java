@@ -1,7 +1,7 @@
 package authentication_service.controller;
 
 import authentication_service.dto.login.LoginResponseDto;
-import authentication_service.dto.login.RefreshTokenDto;
+import authentication_service.dto.login.RefreshedAccessTokenDto;
 import authentication_service.dto.user.UserRequestDto;
 import authentication_service.dto.user.UserResponseDto;
 import authentication_service.service.AuthService;
@@ -55,7 +55,7 @@ public class AuthController {
 
     @GetMapping("/refresh")
     @ResponseStatus(HttpStatus.OK)
-    public RefreshTokenDto refresh(@CookieValue("refreshToken") UUID refreshToken) {
+    public RefreshedAccessTokenDto refresh(@CookieValue("refreshToken") UUID refreshToken) {
         return authService.refreshAccessToken(refreshToken);
     }
 

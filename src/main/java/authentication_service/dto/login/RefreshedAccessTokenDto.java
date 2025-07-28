@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class RefreshTokenDto {
+public class RefreshedAccessTokenDto {
     private String accessToken;
     private int expiresInMinutes;
 }

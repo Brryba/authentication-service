@@ -1,7 +1,7 @@
 package authentication_service.service;
 
 import authentication_service.dto.login.LoginResponseDto;
-import authentication_service.dto.login.RefreshTokenDto;
+import authentication_service.dto.login.RefreshedAccessTokenDto;
 import authentication_service.dto.user.UserRequestDto;
 import authentication_service.dto.user.UserResponseDto;
 import authentication_service.entity.RefreshToken;
@@ -93,7 +93,7 @@ public class AuthService {
         jwtUtil.validateAccessToken(accessToken);
     }
 
-    public RefreshTokenDto refreshAccessToken(UUID refreshToken) {
+    public RefreshedAccessTokenDto refreshAccessToken(UUID refreshToken) {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(
                         HttpStatus.FORBIDDEN,
@@ -106,7 +106,7 @@ public class AuthService {
         String newAccessToken = jwtUtil
                 .generateAccessToken(refreshTokenEntity.getUser().getId());
 
-        return RefreshTokenDto.builder()
+        return RefreshedAccessTokenDto.builder()
                 .accessToken(newAccessToken)
                 .expiresInMinutes(jwtExpirationMinutes)
                 .build();

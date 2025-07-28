@@ -1,7 +1,7 @@
-package authentication_service.unit_test;
+package authentication_service.unit;
 
 import authentication_service.dto.login.LoginResponseDto;
-import authentication_service.dto.login.RefreshTokenDto;
+import authentication_service.dto.login.RefreshedAccessTokenDto;
 import authentication_service.dto.user.UserRequestDto;
 import authentication_service.dto.user.UserResponseDto;
 import authentication_service.entity.RefreshToken;
@@ -10,7 +10,6 @@ import authentication_service.exception.LoginDuplicateException;
 import authentication_service.exception.RefreshTokenExpiredException;
 import authentication_service.exception.UserNotFoundException;
 import authentication_service.exception.WrongPasswordException;
-import authentication_service.mapper.UserMapper;
 import authentication_service.mapper.UserMapperImpl;
 import authentication_service.repository.RefreshTokenRepository;
 import authentication_service.repository.UserRepository;
@@ -145,10 +144,10 @@ public class AuthServiceTest {
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
         when(jwtUtil.generateAccessToken(any())).thenReturn("access_token");
 
-        RefreshTokenDto refreshTokenDto = authService.refreshAccessToken(UUID.randomUUID());
-        assertNotNull(refreshTokenDto);
-        assertEquals("access_token", refreshTokenDto.getAccessToken());
-        assertEquals(jwtExpirationMinutes, refreshTokenDto.getExpiresInMinutes());
+        RefreshedAccessTokenDto refreshedAccessTokenDto = authService.refreshAccessToken(UUID.randomUUID());
+        assertNotNull(refreshedAccessTokenDto);
+        assertEquals("access_token", refreshedAccessTokenDto.getAccessToken());
+        assertEquals(jwtExpirationMinutes, refreshedAccessTokenDto.getExpiresInMinutes());
     }
 
     @Test

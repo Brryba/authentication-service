@@ -1,4 +1,4 @@
-package authentication_service.unit_test;
+package authentication_service.unit;
 
 import authentication_service.service.JwtUtil;
 import io.jsonwebtoken.Claims;
