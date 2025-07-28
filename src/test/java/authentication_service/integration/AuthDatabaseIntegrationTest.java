@@ -133,8 +133,9 @@ public class AuthDatabaseIntegrationTest {
     @Transactional
     void refreshAccessToken_fails_whenInvalidRefreshToken() {
         authService.signUp(userRequestDto);
+        UUID uuid = UUID.randomUUID();
         assertThrows(RefreshTokenNotFoundException.class, () ->
-                authService.refreshAccessToken(UUID.randomUUID()));
+                authService.refreshAccessToken(uuid));
     }
 
     @Test

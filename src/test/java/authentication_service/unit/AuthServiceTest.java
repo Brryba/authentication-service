@@ -155,8 +155,8 @@ public class AuthServiceTest {
         refreshToken.setExpiresAt(LocalDateTime.now().minusHours(100L));
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
 
-
-        assertThrows(RefreshTokenExpiredException.class, () -> authService.refreshAccessToken(UUID.randomUUID()));
+        UUID uuid = UUID.randomUUID();
+        assertThrows(RefreshTokenExpiredException.class, () -> authService.refreshAccessToken(uuid));
     }
 
     @Test
