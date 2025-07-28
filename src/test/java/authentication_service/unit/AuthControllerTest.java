@@ -83,7 +83,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testSignUp_success_201() throws Exception {
+    void testSignUp_success_201() throws Exception {
         when(authService.signUp(any())).thenReturn(userResponseDto);
 
         mockMvc.perform(post("/api/auth/signup")
@@ -94,7 +94,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testLogin_smallPassword_400() throws Exception {
+    void testLogin_smallPassword_400() throws Exception {
         userRequestDto.setPassword("pw");
         mockMvc.perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testSignUp_duplicate_409() throws Exception {
+    void testSignUp_duplicate_409() throws Exception {
         when(authService.signUp(any())).thenThrow(new LoginDuplicateException("duplicate login"));
         mockMvc.perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -113,7 +113,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testLogin_success_200_andSetsRefreshTokenAsCookie() throws Exception {
+    void testLogin_success_200_andSetsRefreshTokenAsCookie() throws Exception {
         UUID uuid = UUID.randomUUID();
         loginResponseDto.setRefreshToken(uuid.toString());
         when(authService.login(any())).thenReturn(loginResponseDto);
@@ -132,14 +132,14 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testTokenVerifier_success_200() throws Exception {
+    void testTokenVerifier_success_200() throws Exception {
         mockMvc.perform(get("/api/auth/verify?token=accessToken")).
                 andExpect(status().isOk())
                 .andExpect(content().string("Token verified!"));
     }
 
     @Test
-    public void testRefreshAccessToken_success_200() throws Exception {
+    void testRefreshAccessToken_success_200() throws Exception {
         UUID uuid = UUID.randomUUID();
         Cookie cookie = new Cookie("refreshToken", uuid.toString());
 
@@ -154,14 +154,14 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void testRefreshAccessToken_noRefreshTokenCookie_400() throws Exception {
+    void testRefreshAccessToken_noRefreshTokenCookie_400() throws Exception {
         mockMvc.perform(post("/api/auth/refresh"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void testLogout_success_204() throws Exception {
+    void testLogout_success_204() throws Exception {
         Cookie cookie = new Cookie("refreshToken", UUID.randomUUID().toString());
 
         mockMvc.perform(post("/api/auth/logout")

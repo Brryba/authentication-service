@@ -28,13 +28,13 @@ public class JwtUnitTest {
     private String key;
 
     @Test
-    public void generateAccessToken_test() {
+    void generateAccessToken_test() {
         String token = jwtUtil.generateAccessToken(1L);
         assertNotNull(token);
     }
 
     @Test
-    public void validatesItsOwnAccessToken() {
+    void validatesItsOwnAccessToken() {
         String token = jwtUtil.generateAccessToken(1L);
         assertNotNull(token);
 
@@ -42,7 +42,7 @@ public class JwtUnitTest {
     }
 
     @Test
-    public void checkJwtTokenReturnsCorrectId_andSetsCorrectExpirationDate() {
+    void checkJwtTokenReturnsCorrectId_andSetsCorrectExpirationDate() {
         String token = jwtUtil.generateAccessToken(1L);
 
         Jws<Claims> claims = Jwts.parser()

@@ -95,7 +95,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void test_signUpWithNewUser() {
+    void test_signUpWithNewUser() {
         UserResponseDto responseDto = authService.signUp(userRequestDto);
 
         assertNotNull(responseDto);
@@ -103,7 +103,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void test_signUp_whenLoginAlreadyExists() {
+    void test_signUp_whenLoginAlreadyExists() {
         when(userRepository.existsByLogin(userRequestDto.getLogin())).thenReturn
                 (true);
 
@@ -112,7 +112,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void test_login_success() {
+    void test_login_success() {
         when(jwtUtil.generateAccessToken(any())).thenReturn("access_token");
         when(refreshTokenRepository.save(any())).thenReturn(refreshToken);
 
@@ -126,21 +126,21 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void test_loginFails_whenUserDoesNotExist() {
+    void test_loginFails_whenUserDoesNotExist() {
         when(userRepository.findByLogin(userRequestDto.getLogin())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> authService.login(userRequestDto));
     }
 
     @Test
-    public void test_loginFails_whenPasswordDoesNotMatch() {
+    void test_loginFails_whenPasswordDoesNotMatch() {
         userRequestDto.setPassword("wrong_password");
 
         assertThrows(WrongPasswordException.class, () -> authService.login(userRequestDto));
     }
 
     @Test
-    public void refreshToken_success() {
+    void refreshToken_success() {
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
         when(jwtUtil.generateAccessToken(any())).thenReturn("access_token");
 
@@ -151,7 +151,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void refreshToken_whenRefreshTokenExpired_throwsException() {
+    void refreshToken_whenRefreshTokenExpired_throwsException() {
         refreshToken.setExpiresAt(LocalDateTime.now().minusHours(100L));
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
 
@@ -160,7 +160,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void logout_success() {
+    void logout_success() {
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
 
         authService.logout(UUID.randomUUID());
