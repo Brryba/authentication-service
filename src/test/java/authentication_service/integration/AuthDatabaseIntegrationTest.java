@@ -46,16 +46,6 @@ public class AuthDatabaseIntegrationTest {
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
-    @BeforeAll
-    static void beforeAll() {
-        postgres.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
-
     private UserRequestDto userRequestDto;
 
     @BeforeEach
