@@ -26,7 +26,7 @@ services:
       - POSTGRES_DB=${POSTGRES_AUTH_DB}
 
   user-service:
-    image: 'user_service:latest'
+    image: 'user-service:latest'
     build:
       context: .
     container_name: 'user-service-container'
@@ -40,6 +40,7 @@ services:
 
       - SPRING_DATA_REDIS_PORT=6379
       - SPRING_DATA_REDIS_HOST=user-redis-cache
+      - JWT_KEY=${JWT_KEY}
 
     ports:
       - "8080:8080"

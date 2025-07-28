@@ -1,0 +1,6 @@
+JWT_KEY: secret-key-for-jwt-util-with-correct-length-but-not-random-for-test-only
+
+token:
+  expiration:
+    access-minutes: 10
+    refresh-days: 7

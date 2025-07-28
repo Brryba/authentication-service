@@ -21,7 +21,7 @@ public class JwtUtil {
     private SecretKey key;
 
     @PostConstruct
-    public void setJwtKey() {
+    private void setJwtKey() {
         this.key = Keys.hmacShaKeyFor(jwtKey.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -35,7 +35,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public void validateAccessToken(String accessToken) {
+    public void validateAccessToken(String accessToken) throws JwtTokenInvalidException {
         JwtParser jwtParser = Jwts.parser().
                 verifyWith(key)
                 .build();
