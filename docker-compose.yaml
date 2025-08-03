@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+  auth-service:
+    image: 'auth-service:latest'
+    build:
+      context: .
+    container_name:
+      'auth-service-container'
+    depends_on:
+      - auth-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/${POSTGRES_AUTH_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - JWT_KEY=${JWT_KEY}
+    ports:
+      - "8081:8080"
+
+  auth-db:
+    image: postgres
+    container_name: 'auth-db'
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_AUTH_DB}
+
+  user-service:
+    image: 'user-service:latest'
+    build:
+      context: .
+    container_name: 'user-service-container'
+    depends_on:
+      - user-db
+      - user-redis-cache
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/${POSTGRES_USER_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_HOST=user-redis-cache
+      - JWT_KEY=${JWT_KEY}
+
+    ports:
+      - "8080:8080"
+
+  user-db:
+    image: postgres
+    container_name: user-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_USER_DB}
+
+  user-redis-cache:
+    image: 'redis:alpine'
+    container_name: 'redis-cache'
+    restart: always
