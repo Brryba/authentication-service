@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: auth-service
   config:
     import: optional:file:.env[.properties]
 
@@ -15,13 +17,20 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
-server:
-  error:
-    include-stacktrace: never
-    include-message: always
-  port: 80
-
 token:
   expiration:
     access-minutes: 10
     refresh-days: 7
+
+
+server:
+  error:
+    include-stacktrace: never
+  port: 80
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
