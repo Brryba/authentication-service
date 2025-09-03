@@ -122,4 +122,13 @@ public class AuthService {
                             "Invalid refresh token or user already logged out");
                 });
     }
+
+    @Transactional
+    public void deleteUserById(Long userId) {
+        User storedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException
+                        ("User with id " + userId + " not found"));
+
+        userRepository.delete(storedUser);
+    }
 }
