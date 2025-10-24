@@ -2,8 +2,8 @@ package authentication_service.camunda;
 
 import authentication_service.dto.user.UserRequestDto;
 import authentication_service.dto.user.UserResponseDto;
-import authentication_service.entity.User;
 import authentication_service.service.AuthService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,6 @@ public class CreateUserHandler implements ExternalTaskHandler {
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         log.info("Received create user external task");
 
-        try {
             JsonValue jsonValue = externalTask.getVariableTyped("authRequest");
             if (jsonValue == null) {
                 log.error("authRequest variable is null!");
@@ -39,9 +38,17 @@ public class CreateUserHandler implements ExternalTaskHandler {
             }
 
             String jsonString = jsonValue.getValue();
-            UserRequestDto authDto = objectMapper.readValue(jsonString, UserRequestDto.class);
-            log.info("created authentication dto: {}", authDto);
 
+            UserRequestDto authDto;
+            try {
+                authDto = objectMapper.readValue(jsonString, UserRequestDto.class);
+            } catch (JsonProcessingException e) {
+                log.error("Error parsing authRequest", e);
+                externalTaskService.handleFailure(externalTask, "Error parsing authRequest", e.getMessage(), 0, 0);
+                return;
+            }
+
+            log.info("created authentication dto: {}", authDto);
             UserResponseDto userResponseDto;
             try {
                 userResponseDto = authService.signUp(authDto);
@@ -55,9 +62,5 @@ public class CreateUserHandler implements ExternalTaskHandler {
             VariableMap variables = Variables.createVariables();
             variables.put("user_id", userResponseDto.getId());
             externalTaskService.complete(externalTask, variables);
-        } catch (Exception e) {
-            log.error("Error processing authRequest", e);
-            externalTaskService.handleFailure(externalTask, e.getMessage(), e.getMessage(), 0, 0);
-        }
     }
 }
