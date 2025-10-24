@@ -135,6 +135,12 @@
             <version>1.21.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.camunda.bpm.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
+            <version>7.24.0</version>
+        </dependency>
     </dependencies>
 
     <build>
