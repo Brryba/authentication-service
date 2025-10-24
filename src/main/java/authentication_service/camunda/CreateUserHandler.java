@@ -1,6 +1,9 @@
 package authentication_service.camunda;
 
 import authentication_service.dto.user.UserRequestDto;
+import authentication_service.dto.user.UserResponseDto;
+import authentication_service.entity.User;
+import authentication_service.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +21,9 @@ import org.springframework.stereotype.Component;
 @ExternalTaskSubscription("auth_service_create")
 @RequiredArgsConstructor
 public class CreateUserHandler implements ExternalTaskHandler {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final String SERVICE_ERROR = "AUTH_SERVICE_ERROR";
+    private final ObjectMapper objectMapper;
+    private final AuthService authService;
 
     @Override
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
@@ -27,17 +32,28 @@ public class CreateUserHandler implements ExternalTaskHandler {
         try {
             JsonValue jsonValue = externalTask.getVariableTyped("authRequest");
             if (jsonValue == null) {
-                log.warn("authRequest variable is null!");
-                externalTaskService.handleFailure(externalTask, "Missing authRequest", "", 0, 0);
+                log.error("authRequest variable is null!");
+                externalTaskService.handleBpmnError(externalTask, SERVICE_ERROR, "The authRequest " +
+                        "variable was not provided");
                 return;
             }
 
             String jsonString = jsonValue.getValue();
             UserRequestDto authDto = objectMapper.readValue(jsonString, UserRequestDto.class);
-            System.out.println(authDto);
+            log.info("created authentication dto: {}", authDto);
+
+            UserResponseDto userResponseDto;
+            try {
+                userResponseDto = authService.signUp(authDto);
+                log.info("created user with ID: {}", userResponseDto.getId());
+            } catch (Exception e) {
+                externalTaskService.handleBpmnError(externalTask, SERVICE_ERROR, e.getMessage());
+                log.error(e.getMessage());
+                return;
+            }
 
             VariableMap variables = Variables.createVariables();
-            variables.put("user_id", 1);
+            variables.put("user_id", userResponseDto.getId());
             externalTaskService.complete(externalTask, variables);
         } catch (Exception e) {
             log.error("Error processing authRequest", e);
