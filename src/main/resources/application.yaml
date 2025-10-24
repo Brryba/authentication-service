@@ -31,6 +31,7 @@ token:
 camunda.bpm.client:
   base-url: ${CAMUNDA_URL}
   lock-duration: 10000
+  async-response-timeout: 750
   subscriptions:
     auth_service_create:
       variable-names: authRequest
@@ -39,7 +40,7 @@ camunda.bpm.client:
 server:
   error:
     include-stacktrace: never
-  port: 81
+  port: 80
 
 eureka:
   client:

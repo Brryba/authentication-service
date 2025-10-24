@@ -2,6 +2,8 @@ package authentication_service.camunda;
 
 import authentication_service.dto.user.UserRequestDto;
 import authentication_service.dto.user.UserResponseDto;
+import authentication_service.exception.BpmnException;
+import authentication_service.exception.ParsingException;
 import authentication_service.service.AuthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +18,8 @@ import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 @Slf4j
 @ExternalTaskSubscription("auth_service_create")
@@ -27,40 +31,58 @@ public class CreateUserHandler implements ExternalTaskHandler {
 
     @Override
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        log.info("Received create user external task");
+        try {
+            UserRequestDto authDto = readAuthRequest(externalTask);
+            UserResponseDto userResponseDto = callAuthService(authDto);
+            completeTask(externalTask, externalTaskService, userResponseDto);
 
-            JsonValue jsonValue = externalTask.getVariableTyped("authRequest");
-            if (jsonValue == null) {
-                log.error("authRequest variable is null!");
-                externalTaskService.handleBpmnError(externalTask, SERVICE_ERROR, "The authRequest " +
-                        "variable was not provided");
-                return;
-            }
+        } catch (BpmnException e) {
+            log.error("BPMN error: {}", e.getMessage());
+            externalTaskService.setVariables(externalTask, Map.of("error", e.getMessage()));
+            externalTaskService.handleBpmnError(externalTask, SERVICE_ERROR, e.getMessage());
 
-            String jsonString = jsonValue.getValue();
+        } catch (ParsingException e) {
+            log.error("Parsing parameters failure: {}", e.getMessage(), e);
+            externalTaskService.handleFailure(externalTask, "Error parsing JSON",
+                    e.getErrorMessage(), 0, 0);
 
-            UserRequestDto authDto;
-            try {
-                authDto = objectMapper.readValue(jsonString, UserRequestDto.class);
-            } catch (JsonProcessingException e) {
-                log.error("Error parsing authRequest", e);
-                externalTaskService.handleFailure(externalTask, "Error parsing authRequest", e.getMessage(), 0, 0);
-                return;
-            }
+        }
+    }
 
-            log.info("created authentication dto: {}", authDto);
-            UserResponseDto userResponseDto;
-            try {
-                userResponseDto = authService.signUp(authDto);
-                log.info("created user with ID: {}", userResponseDto.getId());
-            } catch (Exception e) {
-                externalTaskService.handleBpmnError(externalTask, SERVICE_ERROR, e.getMessage());
-                log.error(e.getMessage());
-                return;
-            }
+    private UserRequestDto readAuthRequest(ExternalTask externalTask) {
+        JsonValue jsonValue = externalTask.getVariableTyped("authRequest");
+        if (jsonValue == null) {
+            throw new ParsingException("authRequest variable is missing");
+        }
+        try {
+            UserRequestDto userRequest = objectMapper.readValue(jsonValue.getValue(), UserRequestDto.class);
+            log.info("Received authRequest: {}", userRequest.getLogin());
+            return userRequest;
+        } catch (JsonProcessingException e) {
+            throw new ParsingException("Failed to parse authRequest");
+        }
+    }
 
-            VariableMap variables = Variables.createVariables();
-            variables.put("user_id", userResponseDto.getId());
-            externalTaskService.complete(externalTask, variables);
+    private UserResponseDto callAuthService(UserRequestDto authDto) {
+        try {
+            UserResponseDto userResponse = authService.signUp(authDto);
+            log.info("Created user with id {}", userResponse.getId());
+            return userResponse;
+        } catch (Exception e) {
+            throw new BpmnException(e.getMessage());
+        }
+    }
+
+    private void completeTask(ExternalTask externalTask, ExternalTaskService externalTaskService,
+                              UserResponseDto userResponseDto) {
+        VariableMap variables = Variables.createVariables();
+        variables.put("user_id", userResponseDto.getId());
+        try {
+            variables.put("authResponse", objectMapper.writeValueAsString(userResponseDto));
+        } catch (JsonProcessingException e) {
+            throw new ParsingException("Failed to serialize authResponse");
+        }
+        externalTaskService.complete(externalTask, variables);
+        log.info("Completed task by creating user {}", userResponseDto.getLogin());
     }
 }
