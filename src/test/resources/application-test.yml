@@ -8,4 +8,4 @@ token:
 camunda:
   bpm:
     client:
-      enabled: false
+      disable-auto-fetching: true

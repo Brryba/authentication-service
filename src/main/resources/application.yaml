@@ -42,7 +42,7 @@ camunda.bpm.client:
 server:
   error:
     include-stacktrace: never
-  port: 8082
+  port: 80
 
 eureka:
   client:
