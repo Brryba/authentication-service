@@ -53,7 +53,7 @@ jobs:
         env:
           ACCESS_TOKEN_JWT_SECRET: "${{ secrets.JWT_KEY }}"
         run: |
-          docker run -d --name auth-service-container -e JWT_KEY=${{ secrets.JWT_KEY }} auth-service-docker-image
+          docker run -d --name auth-service-container -e ACCESS_TOKEN_JWT_SECRET=${{ secrets.JWT_KEY }} auth-service-docker-image
   sonarqube:
     if: github.event_name == 'pull_request' && github.base_ref == 'master'
     runs-on: ubuntu-latest
