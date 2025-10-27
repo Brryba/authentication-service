@@ -4,8 +4,3 @@ token:
   expiration:
     access-minutes: 10
     refresh-days: 7
-
-camunda:
-  bpm:
-    client:
-      disable-auto-fetching: true
