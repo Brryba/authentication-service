@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 env:
-  JWT_KEY: ${{ secrets.JWT_KEY }}
+  ACCESS_TOKEN_JWT_SECRET: ${{ secrets.JWT_KEY }}
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
 
       - name: Test and Build with Maven
         env:
-          JWT_KEY: "${{ secrets.JWT_KEY }}"
+          ACCESS_TOKEN_JWT_SECRET: "${{ secrets.JWT_KEY }}"
         run: mvn package
 
       - name: Upload artifact for container job
@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Docker container
         env:
-          JWT_KEY: "${{ secrets.JWT_KEY }}"
+          ACCESS_TOKEN_JWT_SECRET: "${{ secrets.JWT_KEY }}"
         run: |
           docker run -d --name auth-service-container -e JWT_KEY=${{ secrets.JWT_KEY }} auth-service-docker-image
   sonarqube:
@@ -89,7 +89,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JWT_KEY: ${{ secrets.JWT_KEY }}
+          ACCESS_TOKEN_JWT_SECRET: ${{ secrets.JWT_KEY }}
         run: |
           mvn -B verify \
             org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar \
