@@ -27,6 +27,8 @@ token:
   expiration:
     access-minutes: 10
     refresh-days: 7
+  access:
+    secret: ${ACCESS_TOKEN_JWT_SECRET}
 
 camunda.bpm.client:
   base-url: ${CAMUNDA_URL}
