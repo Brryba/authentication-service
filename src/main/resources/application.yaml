@@ -30,19 +30,21 @@ token:
   access:
     secret: ${ACCESS_TOKEN_JWT_SECRET}
 
-camunda.bpm.client:
-  base-url: ${CAMUNDA_URL}
-  lock-duration: 10000
-  disable-backoff-strategy: true
-  subscriptions:
-    auth_service_create:
-      variable-names: authRequest
-  default-serialization-format: application/json
+camunda:
+  client:
+    mode: self-managed
+#  base-url: ${CAMUNDA_URL}
+#  lock-duration: 10000
+#  disable-backoff-strategy: true
+#  subscriptions:
+#    auth_service_create:
+#      variable-names: authRequest
+#  default-serialization-format: application/json
 
 server:
   error:
     include-stacktrace: never
-  port: 80
+  port: 81
 
 eureka:
   client:
