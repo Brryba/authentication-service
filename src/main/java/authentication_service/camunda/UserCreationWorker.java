@@ -1,4 +1,4 @@
-package authentication_service.camunda_workers;
+package authentication_service.camunda;
 
 import authentication_service.dto.user.UserRequestDto;
 import authentication_service.dto.user.UserResponseDto;
@@ -19,7 +19,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CamundaWorkers {
+public class UserCreationWorker {
     private final ObjectMapper objectMapper;
     private final AuthService authService;
 
