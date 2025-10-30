@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JwtUnitTest {
     @Autowired
     private JwtUtil jwtUtil;
-    @Value("${JWT_KEY}")
+    @Value("${token.access.secret}")
     private String key;
 
     @Test

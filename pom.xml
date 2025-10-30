@@ -135,6 +135,12 @@
             <version>1.21.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.camunda</groupId>
+            <artifactId>camunda-spring-boot-starter</artifactId>
+            <version>8.8.2</version>
+        </dependency>
     </dependencies>
 
     <build>

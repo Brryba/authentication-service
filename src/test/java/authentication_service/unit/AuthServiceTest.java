@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.when;
         PasswordEncoder.class,
         BCryptPasswordEncoder.class
 })
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
     @MockitoBean
